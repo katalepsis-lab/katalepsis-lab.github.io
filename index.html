@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Katalepsis Lab</title>
+  <title>Katalepsis Lab | Macro Research</title>
   <style>
     :root {
       --ink: #0c1b2f;
@@ -16,9 +16,7 @@
       --radius: 16px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -171,9 +169,7 @@
       background: rgba(255, 255, 255, 0.06);
     }
 
-    .btn-primary:hover {
-      background: linear-gradient(120deg, #0ffecc, #72ffe0);
-    }
+    .btn-primary:hover { background: linear-gradient(120deg, #0ffecc, #72ffe0); }
 
     .panel {
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.0));
@@ -202,20 +198,10 @@
       background: rgba(255, 255, 255, 0.03);
     }
 
-    .metric .label {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
+    .metric .label { color: var(--muted); font-size: 0.85rem; }
+    .metric .value { font-size: 1.35rem; font-weight: 700; color: var(--glow); }
 
-    .metric .value {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--glow);
-    }
-
-    section {
-      margin-bottom: 70px;
-    }
+    section { margin-bottom: 70px; }
 
     .section-header {
       display: flex;
@@ -224,15 +210,8 @@
       margin-bottom: 24px;
     }
 
-    .section-header h2 {
-      margin: 0;
-      font-size: 1.6rem;
-    }
-
-    .section-header p {
-      margin: 0;
-      color: var(--muted);
-    }
+    .section-header h2 { margin: 0; font-size: 1.6rem; }
+    .section-header p { margin: 0; color: var(--muted); }
 
     .cards {
       display: grid;
@@ -260,18 +239,10 @@
       transition: opacity 0.25s ease;
     }
 
-    .card:hover::before {
-      opacity: 1;
-    }
+    .card:hover::before { opacity: 1; }
 
-    .card h3 {
-      margin: 0 0 8px;
-    }
-
-    .card p {
-      margin: 0 0 12px;
-      color: #d1deed;
-    }
+    .card h3 { margin: 0 0 8px; }
+    .card p { margin: 0 0 12px; color: #d1deed; }
 
     .pill {
       display: inline-flex;
@@ -298,19 +269,11 @@
       font-size: 0.95rem;
     }
 
-    .footer a {
-      color: var(--glow);
-      text-decoration: none;
-    }
+    .footer a { color: var(--glow); text-decoration: none; }
 
     @media (max-width: 820px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .nav-links {
-        display: none;
-      }
+      .hero { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
     }
   </style>
 </head>
@@ -322,9 +285,9 @@
         <span>Katalepsis Lab</span>
       </div>
       <nav class="nav-links" aria-label="Primary">
-        <a href="#about">About</a>
-        <a href="#focus">Focus Areas</a>
-        <a href="#projects">Projects</a>
+        <a href="#dashboards">Macro Dashboards</a>
+        <a href="#optimizer">Portfolio Optimizer</a>
+        <a href="#approach">Approach</a>
         <a href="#contact">Contact</a>
       </nav>
     </div>
@@ -333,82 +296,102 @@
   <main>
     <section class="hero" id="about">
       <div>
-        <div class="eyebrow"><span class="dot"></span><span>Story systems research</span></div>
-        <h1>Katalepsis Lab explores interactive narrative, AI tooling, and playful computation.</h1>
-        <p class="lede">We prototype narrative engines, design speculative interfaces, and publish experiments that blend engineering with evocative worldbuilding.</p>
+        <div class="eyebrow"><span class="dot"></span><span>Macro research studio</span></div>
+        <h1>Katalepsis Lab builds decision tools for macro investors.</h1>
+        <p class="lede">We translate data, policy signals, and market structure into dashboards and optimizers that keep portfolios aligned with the regime in play.</p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href="#projects">Explore projects</a>
-          <a class="btn btn-ghost" href="mailto:hello@katalepsislab.com">Start a conversation</a>
+          <a class="btn btn-primary" href="#dashboards">View dashboards</a>
+          <a class="btn btn-ghost" href="#optimizer">Explore optimizer</a>
         </div>
       </div>
       <div class="panel hero-panel">
         <div class="hero-grid">
           <div class="metric">
+            <div class="label">Coverage</div>
+            <div class="value">Global DM + EM</div>
+          </div>
+          <div class="metric">
             <div class="label">Focus</div>
-            <div class="value">Narrative Engines</div>
+            <div class="value">Rates, FX, Growth</div>
           </div>
           <div class="metric">
-            <div class="label">Mode</div>
-            <div class="value">Research & Build</div>
-          </div>
-          <div class="metric">
-            <div class="label">Ethos</div>
-            <div class="value">Generative craft</div>
+            <div class="label">Delivery</div>
+            <div class="value">Dashboards & Apps</div>
           </div>
         </div>
         <div class="grid-compact">
-          <div class="pill">World prototyping</div>
-          <div class="pill">Playable interfaces</div>
-          <div class="pill">Linguistic systems</div>
-          <div class="pill">Tools for teams</div>
+          <div class="pill">Nowcasting</div>
+          <div class="pill">Factor tilts</div>
+          <div class="pill">Scenario stress</div>
+          <div class="pill">Cross-asset signals</div>
         </div>
       </div>
     </section>
 
-    <section id="focus">
+    <section id="dashboards">
       <div class="section-header">
-        <h2>What we build</h2>
-        <p>Deliberate experiments that make stories feel alive.</p>
+        <h2>Macro Dashboards</h2>
+        <p>Country views that blend growth, inflation, policy, and market tone.</p>
       </div>
       <div class="cards">
         <article class="card">
-          <h3>Story engines</h3>
-          <p>Playable simulations that braid rules, characters, and language to create new narrative surfaces.</p>
-          <span class="pill">Narrative design</span>
+          <h3>Canada</h3>
+          <p>Housing, labor, and BoC path monitoring with regional spreads and breakevens.</p>
+          <span class="pill">Coming soon</span>
         </article>
         <article class="card">
-          <h3>Tools for teams</h3>
-          <p>Editorial workflows, writer-facing dashboards, and pipelines that make creative iteration fast.</p>
-          <span class="pill">Production systems</span>
+          <h3>USA</h3>
+          <p>Growth nowcast, liquidity pulse, term premium estimates, and sector rotation heatmaps.</p>
+          <span class="pill">Coming soon</span>
         </article>
         <article class="card">
-          <h3>Speculative prototypes</h3>
-          <p>Short, expressive experiments that explore what AI-native stories and interfaces can become.</p>
-          <span class="pill">R&D sprints</span>
+          <h3>China</h3>
+          <p>Credit impulse, export momentum, policy easing tracker, and commodity signal stack.</p>
+          <span class="pill">Coming soon</span>
         </article>
       </div>
     </section>
 
-    <section id="projects">
+    <section id="optimizer">
       <div class="section-header">
-        <h2>Selected work</h2>
-        <p>Snapshots from the lab—each designed to invite play.</p>
+        <h2>Portfolio Optimizer</h2>
+        <p>Allocate by factor exposure or asset class tilts with transparent constraints.</p>
+      </div>
+      <div class="panel">
+        <p>Model portfolios that flex between risk-on and risk-off regimes, guided by macro signals and your guardrails.</p>
+        <div class="grid-compact" style="margin-top: 14px;">
+          <div class="pill">Factor weights (value, growth, quality, carry)</div>
+          <div class="pill">Asset class and sub-asset tilts</div>
+          <div class="pill">Drawdown and vol limits</div>
+          <div class="pill">Scenario stress tests</div>
+        </div>
+        <div class="hero-cta" style="margin-top: 18px;">
+          <a class="btn btn-primary" href="mailto:hello@katalepsislab.com">Request access</a>
+          <a class="btn btn-ghost" href="#approach">See methodology</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="approach">
+      <div class="section-header">
+        <h2>How we work</h2>
+        <p>Transparent models, reproducible research, and fast iteration loops.</p>
       </div>
       <div class="cards">
         <article class="card">
-          <h3>Chorus</h3>
-          <p>A character-driven narrative core that layers authored arcs with emergent dialogue.</p>
-          <span class="pill">Story kernel</span>
+          <h3>Signal design</h3>
+          <p>Blend macro data, market prices, and qualitative policy signals into clean, explainable scores.</p>
+          <span class="pill">Evidence over noise</span>
         </article>
         <article class="card">
-          <h3>Cartographer</h3>
-          <p>Spatial UI for mapping lore, quests, and player choices across branching worlds.</p>
-          <span class="pill">Knowledge maps</span>
+          <h3>Product-first</h3>
+          <p>We ship dashboards and apps, not PDFs. Everything is built to be touched, tested, and improved.</p>
+          <span class="pill">Interactive delivery</span>
         </article>
         <article class="card">
-          <h3>Glassbox</h3>
-          <p>Transparent AI toolkit for writers who need control, auditability, and playful knobs.</p>
-          <span class="pill">Tooling</span>
+          <h3>Partnered builds</h3>
+          <p>Co-develop with your team to reflect mandate, constraints, and governance out of the gate.</p>
+          <span class="pill">Co-create</span>
         </article>
       </div>
     </section>
@@ -417,7 +400,7 @@
       <div class="panel">
         <div class="section-header">
           <h2>Collaborate with Katalepsis Lab</h2>
-          <p>Let's build narrative technology with taste and intention.</p>
+          <p>Let us build your macro dashboards and portfolio optimizer together.</p>
         </div>
         <div class="hero-cta">
           <a class="btn btn-primary" href="mailto:hello@katalepsislab.com">Email the lab</a>
@@ -429,7 +412,7 @@
 
   <footer class="footer">
     <div class="nav">
-      <span>Katalepsis Lab - story technology research studio</span>
+      <span>Katalepsis Lab - macro research and decision tools</span>
       <span><a href="mailto:hello@katalepsislab.com">hello@katalepsislab.com</a></span>
     </div>
   </footer>
