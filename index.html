@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Katalepsis Lab</title>
+  <style>
+    :root {
+      --ink: #0c1b2f;
+      --card: #0f253d;
+      --glow: #72ffe0;
+      --accent: #f7c947;
+      --muted: #c7d6e5;
+      --edge: rgba(255, 255, 255, 0.06);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Bahnschrift", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+      color: #f3f7fb;
+      background: radial-gradient(circle at 20% 20%, rgba(114, 255, 224, 0.08), transparent 27%),
+                  radial-gradient(circle at 80% 10%, rgba(247, 201, 71, 0.1), transparent 25%),
+                  linear-gradient(130deg, #050a12 0%, #0a1626 40%, #0b1727 100%);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(6, 12, 20, 0.7);
+      border-bottom: 1px solid var(--edge);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 22px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, var(--glow) 40%, #11936f 75%);
+      box-shadow: 0 0 0 6px rgba(114, 255, 224, 0.12), 0 10px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      color: #e9f1f7;
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      color: var(--glow);
+      border-color: rgba(114, 255, 224, 0.35);
+      background: rgba(114, 255, 224, 0.08);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 22px 80px;
+    }
+
+    .hero {
+      margin: 32px 0 70px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--edge);
+      border-radius: 999px;
+      padding: 10px 14px;
+    }
+
+    .eyebrow .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--glow);
+      box-shadow: 0 0 0 4px rgba(114, 255, 224, 0.25);
+    }
+
+    h1 {
+      font-size: clamp(2.3rem, 4vw, 3.6rem);
+      margin: 16px 0 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .lede {
+      font-size: 1.1rem;
+      color: #d8e4f0;
+      max-width: 640px;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 26px 0 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: 1px solid var(--edge);
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, #0ffecc, #0ac6a0);
+      color: #041118;
+      box-shadow: 0 12px 30px rgba(9, 198, 160, 0.35);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.03);
+      color: #f0f5fb;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(120deg, #0ffecc, #72ffe0);
+    }
+
+    .panel {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.0));
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      display: grid;
+      gap: 16px;
+      border-image: linear-gradient(120deg, rgba(114, 255, 224, 0.4), rgba(247, 201, 71, 0.35)) 1;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .metric {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--edge);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .metric .value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--glow);
+    }
+
+    section {
+      margin-bottom: 70px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border-radius: var(--radius);
+      border: 1px solid var(--edge);
+      background: #0f2238;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(140deg, rgba(114, 255, 224, 0.2), transparent 50%);
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+    }
+
+    .card p {
+      margin: 0 0 12px;
+      color: #d1deed;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .grid-compact {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .footer {
+      border-top: 1px solid var(--edge);
+      padding: 26px 0 46px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer a {
+      color: var(--glow);
+      text-decoration: none;
+    }
+
+    @media (max-width: 820px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <span>Katalepsis Lab</span>
+      </div>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#focus">Focus Areas</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="about">
+      <div>
+        <div class="eyebrow"><span class="dot"></span><span>Story systems research</span></div>
+        <h1>Katalepsis Lab explores interactive narrative, AI tooling, and playful computation.</h1>
+        <p class="lede">We prototype narrative engines, design speculative interfaces, and publish experiments that blend engineering with evocative worldbuilding.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#projects">Explore projects</a>
+          <a class="btn btn-ghost" href="mailto:hello@katalepsislab.com">Start a conversation</a>
+        </div>
+      </div>
+      <div class="panel hero-panel">
+        <div class="hero-grid">
+          <div class="metric">
+            <div class="label">Focus</div>
+            <div class="value">Narrative Engines</div>
+          </div>
+          <div class="metric">
+            <div class="label">Mode</div>
+            <div class="value">Research & Build</div>
+          </div>
+          <div class="metric">
+            <div class="label">Ethos</div>
+            <div class="value">Generative craft</div>
+          </div>
+        </div>
+        <div class="grid-compact">
+          <div class="pill">World prototyping</div>
+          <div class="pill">Playable interfaces</div>
+          <div class="pill">Linguistic systems</div>
+          <div class="pill">Tools for teams</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="focus">
+      <div class="section-header">
+        <h2>What we build</h2>
+        <p>Deliberate experiments that make stories feel alive.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3>Story engines</h3>
+          <p>Playable simulations that braid rules, characters, and language to create new narrative surfaces.</p>
+          <span class="pill">Narrative design</span>
+        </article>
+        <article class="card">
+          <h3>Tools for teams</h3>
+          <p>Editorial workflows, writer-facing dashboards, and pipelines that make creative iteration fast.</p>
+          <span class="pill">Production systems</span>
+        </article>
+        <article class="card">
+          <h3>Speculative prototypes</h3>
+          <p>Short, expressive experiments that explore what AI-native stories and interfaces can become.</p>
+          <span class="pill">R&D sprints</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="section-header">
+        <h2>Selected work</h2>
+        <p>Snapshots from the lab—each designed to invite play.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3>Chorus</h3>
+          <p>A character-driven narrative core that layers authored arcs with emergent dialogue.</p>
+          <span class="pill">Story kernel</span>
+        </article>
+        <article class="card">
+          <h3>Cartographer</h3>
+          <p>Spatial UI for mapping lore, quests, and player choices across branching worlds.</p>
+          <span class="pill">Knowledge maps</span>
+        </article>
+        <article class="card">
+          <h3>Glassbox</h3>
+          <p>Transparent AI toolkit for writers who need control, auditability, and playful knobs.</p>
+          <span class="pill">Tooling</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="panel">
+        <div class="section-header">
+          <h2>Collaborate with Katalepsis Lab</h2>
+          <p>Let's build narrative technology with taste and intention.</p>
+        </div>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="mailto:hello@katalepsislab.com">Email the lab</a>
+          <a class="btn btn-ghost" href="https://github.com/katalepsis-lab" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="nav">
+      <span>Katalepsis Lab - story technology research studio</span>
+      <span><a href="mailto:hello@katalepsislab.com">hello@katalepsislab.com</a></span>
+    </div>
+  </footer>
+</body>
+</html>
