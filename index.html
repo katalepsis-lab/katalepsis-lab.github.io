@@ -3,39 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Katalepsis Lab | Macro Research</title>
+  <title>Katalepsis Lab | Personal Macro Sandbox</title>
   <style>
     :root {
-      --ink: #0c1b2f;
-      --card: #0f253d;
-      --glow: #72ffe0;
-      --accent: #f7c947;
-      --muted: #c7d6e5;
-      --edge: rgba(255, 255, 255, 0.06);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-      --radius: 16px;
+      --bg: #0d141f;
+      --panel: #121c2b;
+      --card: #162338;
+      --text: #e9eef5;
+      --muted: #c4d2e0;
+      --accent: #6ee7b7;
+      --accent-strong: #42c498;
+      --edge: rgba(255, 255, 255, 0.08);
+      --shadow: 0 18px 46px rgba(0, 0, 0, 0.35);
+      --radius: 14px;
     }
 
     * { box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Bahnschrift", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-      color: #f3f7fb;
-      background: radial-gradient(circle at 20% 20%, rgba(114, 255, 224, 0.08), transparent 27%),
-                  radial-gradient(circle at 80% 10%, rgba(247, 201, 71, 0.1), transparent 25%),
-                  linear-gradient(130deg, #050a12 0%, #0a1626 40%, #0b1727 100%);
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 20% 20%, rgba(110, 231, 183, 0.08), transparent 26%),
+                  radial-gradient(circle at 82% 10%, rgba(110, 231, 183, 0.12), transparent 24%),
+                  linear-gradient(130deg, #090f19 0%, #0f1726 35%, #0b1322 100%);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
+
+    a { color: var(--accent); }
 
     header {
       position: sticky;
       top: 0;
       z-index: 20;
       backdrop-filter: blur(12px);
-      background: rgba(6, 12, 20, 0.7);
+      background: rgba(9, 15, 25, 0.82);
       border-bottom: 1px solid var(--edge);
     }
 
@@ -45,44 +51,66 @@
       justify-content: space-between;
       max-width: 1100px;
       margin: 0 auto;
-      padding: 18px 22px;
+      padding: 16px 22px;
+      gap: 14px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-weight: 700;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.6px;
     }
 
     .logo-mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ffffff, var(--glow) 40%, #11936f 75%);
-      box-shadow: 0 0 0 6px rgba(114, 255, 224, 0.12), 0 10px 40px rgba(0, 0, 0, 0.25);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.15), rgba(66, 196, 152, 0.45));
+      border: 1px solid var(--edge);
+      box-shadow: 0 0 0 6px rgba(110, 231, 183, 0.14), 0 12px 30px rgba(0, 0, 0, 0.28);
     }
+
+    .logo span {
+      display: block;
+      line-height: 1.2;
+    }
+
+    .logo .brand { font-size: 1rem; }
+    .logo .tagline { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
 
     .nav-links {
       display: flex;
-      gap: 18px;
-      font-size: 0.95rem;
+      align-items: center;
+      gap: 16px;
     }
 
     .nav-links a {
-      color: #e9f1f7;
+      color: var(--text);
       text-decoration: none;
       padding: 8px 10px;
       border-radius: 10px;
-      transition: all 0.25s ease;
       border: 1px solid transparent;
+      font-weight: 600;
+      transition: all 0.2s ease;
     }
 
-    .nav-links a:hover {
-      color: var(--glow);
-      border-color: rgba(114, 255, 224, 0.35);
-      background: rgba(114, 255, 224, 0.08);
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--accent);
+      border-color: var(--edge);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-toggle {
+      display: none;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--edge);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
     }
 
     main {
@@ -91,11 +119,13 @@
       padding: 28px 22px 80px;
     }
 
+    section { margin-bottom: 70px; }
+
     .hero {
-      margin: 32px 0 70px;
+      margin: 28px 0 70px;
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 30px;
+      gap: 28px;
       align-items: center;
     }
 
@@ -105,7 +135,7 @@
       gap: 10px;
       font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 1.4px;
+      letter-spacing: 1.2px;
       color: var(--muted);
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--edge);
@@ -117,27 +147,27 @@
       width: 8px;
       height: 8px;
       border-radius: 999px;
-      background: var(--glow);
-      box-shadow: 0 0 0 4px rgba(114, 255, 224, 0.25);
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.2);
     }
 
     h1 {
-      font-size: clamp(2.3rem, 4vw, 3.6rem);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
       margin: 16px 0 12px;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.4px;
     }
 
     .lede {
-      font-size: 1.1rem;
-      color: #d8e4f0;
+      font-size: 1.05rem;
+      color: #dfe7f1;
       max-width: 640px;
     }
 
     .hero-cta {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
-      margin: 26px 0 10px;
+      gap: 12px;
+      margin: 24px 0 10px;
     }
 
     .btn {
@@ -146,33 +176,36 @@
       gap: 10px;
       padding: 12px 16px;
       border-radius: 12px;
-      font-weight: 600;
+      font-weight: 700;
       border: 1px solid var(--edge);
       text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+      cursor: pointer;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
     }
 
     .btn-primary {
-      background: linear-gradient(120deg, #0ffecc, #0ac6a0);
+      background: linear-gradient(120deg, var(--accent) 0%, var(--accent-strong) 100%);
       color: #041118;
-      box-shadow: 0 12px 30px rgba(9, 198, 160, 0.35);
+      box-shadow: 0 12px 30px rgba(66, 196, 152, 0.35);
     }
 
-    .btn-ghost {
-      background: rgba(255, 255, 255, 0.03);
-      color: #f0f5fb;
-    }
-
-    .btn:hover {
+    .btn:hover,
+    .btn:focus-visible {
       transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
       background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
     }
 
-    .btn-primary:hover { background: linear-gradient(120deg, #0ffecc, #72ffe0); }
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      background: linear-gradient(120deg, var(--accent) 0%, #93f3d3 100%);
+    }
 
     .panel {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.0));
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
       border: 1px solid var(--edge);
       border-radius: var(--radius);
       padding: 22px;
@@ -182,47 +215,49 @@
     .hero-panel {
       display: grid;
       gap: 16px;
-      border-image: linear-gradient(120deg, rgba(114, 255, 224, 0.4), rgba(247, 201, 71, 0.35)) 1;
+      border-image: linear-gradient(120deg, rgba(110, 231, 183, 0.4), rgba(110, 231, 183, 0)) 1;
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .metric {
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--edge);
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--muted);
       background: rgba(255, 255, 255, 0.03);
     }
-
-    .metric .label { color: var(--muted); font-size: 0.85rem; }
-    .metric .value { font-size: 1.35rem; font-weight: 700; color: var(--glow); }
-
-    section { margin-bottom: 70px; }
 
     .section-header {
       display: flex;
       align-items: baseline;
-      gap: 10px;
-      margin-bottom: 24px;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
     }
 
-    .section-header h2 { margin: 0; font-size: 1.6rem; }
-    .section-header p { margin: 0; color: var(--muted); }
+    .section-header h2 { margin: 0; font-size: 1.6rem; letter-spacing: -0.2px; }
+    .section-header p { margin: 0; color: var(--muted); max-width: 620px; }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
     }
 
     .card {
       border-radius: var(--radius);
       border: 1px solid var(--edge);
-      background: #0f2238;
+      background: var(--card);
       padding: 20px;
       box-shadow: var(--shadow);
       position: relative;
@@ -233,7 +268,7 @@
       content: "";
       position: absolute;
       inset: -1px;
-      background: linear-gradient(140deg, rgba(114, 255, 224, 0.2), transparent 50%);
+      background: linear-gradient(140deg, rgba(110, 231, 183, 0.15), transparent 55%);
       z-index: 0;
       opacity: 0;
       transition: opacity 0.25s ease;
@@ -242,179 +277,455 @@
     .card:hover::before { opacity: 1; }
 
     .card h3 { margin: 0 0 8px; }
-    .card p { margin: 0 0 12px; color: #d1deed; }
+    .card p { margin: 0 0 12px; color: #d6e1ec; }
 
-    .pill {
+    .status {
       display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(110, 231, 183, 0.08);
+      border: 1px solid rgba(110, 231, 183, 0.25);
+      color: var(--text);
+      font-weight: 600;
       font-size: 0.9rem;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.03);
     }
 
-    .grid-compact {
+    .tiles {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tile {
+      border: 1px solid var(--edge);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tile .label { color: var(--muted); font-size: 0.9rem; }
+    .tile .value { font-weight: 700; margin-top: 6px; }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .about-block {
+      margin-top: 18px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid var(--edge);
+      color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+
+    .note {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .chat-grid {
+      display: grid;
+      grid-template-columns: 0.38fr 0.62fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .chat-config {
+      display: grid;
       gap: 12px;
     }
 
-    .footer {
-      border-top: 1px solid var(--edge);
-      padding: 26px 0 46px;
-      color: var(--muted);
-      font-size: 0.95rem;
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--edge);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: inherit;
     }
 
-    .footer a { color: var(--glow); text-decoration: none; }
+    textarea { resize: vertical; min-height: 60px; }
 
-    @media (max-width: 820px) {
+    .help { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+
+    .chat-window {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--edge);
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .message { display: flex; }
+    .message.user { justify-content: flex-end; }
+
+    .bubble {
+      max-width: 90%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--edge);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .message.user .bubble {
+      background: rgba(110, 231, 183, 0.12);
+      border-color: rgba(110, 231, 183, 0.35);
+      color: var(--text);
+    }
+
+    .message.assistant .bubble { color: var(--text); }
+
+    .chat-input {
+      border-top: 1px solid var(--edge);
+      padding: 10px;
+      display: flex;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.12);
+      position: sticky;
+      bottom: 0;
+    }
+
+    .chat-input textarea {
+      min-height: 48px;
+      max-height: 120px;
+    }
+
+    .error {
+      color: #ffb4a2;
+      font-size: 0.95rem;
+      margin: 6px 0 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--edge);
+      padding: 24px 22px 40px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      background: rgba(5, 8, 14, 0.7);
+    }
+
+    @media (max-width: 920px) {
       .hero { grid-template-columns: 1fr; }
+      .chat-grid { grid-template-columns: 1fr; }
+      .chat-window { min-height: 360px; }
+      .chat-input { position: static; }
       .nav-links { display: none; }
+      .nav-toggle { display: inline-flex; }
+      .nav.open .nav-links {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: rgba(7, 12, 20, 0.94);
+        padding: 12px;
+        border: 1px solid var(--edge);
+        border-radius: 12px;
+      }
+      .nav { align-items: flex-start; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="nav">
+    <div class="nav" id="siteNav">
       <div class="logo">
         <div class="logo-mark" aria-hidden="true"></div>
-        <span>Katalepsis Lab</span>
+        <div>
+          <span class="brand">Katalepsis Lab</span>
+          <span class="tagline">Macro research sandbox</span>
+        </div>
       </div>
+      <button class="nav-toggle" aria-label="Toggle navigation" id="navToggle">Menu</button>
       <nav class="nav-links" aria-label="Primary">
-        <a href="#dashboards">Macro Dashboards</a>
-        <a href="#optimizer">Portfolio Optimizer</a>
-        <a href="#approach">Approach</a>
-        <a href="#contact">Contact</a>
+        <a href="#home">Home</a>
+        <a href="#dashboards">Dashboards</a>
+        <a href="#chatbot">Chatbot</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero" id="about">
+    <section class="hero" id="home">
       <div>
-        <div class="eyebrow"><span class="dot"></span><span>Macro research studio</span></div>
-        <h1>Katalepsis Lab builds decision tools for macro investors.</h1>
-        <p class="lede">We translate data, policy signals, and market structure into dashboards and optimizers that keep portfolios aligned with the regime in play.</p>
+        <div class="eyebrow"><span class="dot"></span><span>Personal macro lab</span></div>
+        <h1>Katalepsis Lab · Personal macro research sandbox</h1>
+        <p class="lede">A place where I tinker with data pipelines, macro dashboards, and portfolio optimizers. Everything here is experimental, educational, and actively changing.</p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="#dashboards">View dashboards</a>
-          <a class="btn btn-ghost" href="#optimizer">Explore optimizer</a>
+          <a class="btn" href="#chatbot">Try the chatbot</a>
+        </div>
+        <div class="chips">
+          <span class="pill">Macro data plumbing</span>
+          <span class="pill">Regime detection experiments</span>
+          <span class="pill">Portfolio sandbox</span>
+        </div>
+        <div class="about-block">
+          <strong>About the project:</strong>
+          <p style="margin: 8px 0 0;">Learning in public by building my own tools. No clients, no sales funnel—just a working bench for macro dashboards and portfolio ideas. Not investment advice.</p>
         </div>
       </div>
       <div class="panel hero-panel">
-        <div class="hero-grid">
-          <div class="metric">
-            <div class="label">Coverage</div>
-            <div class="value">Global DM + EM</div>
-          </div>
-          <div class="metric">
-            <div class="label">Focus</div>
-            <div class="value">Rates, FX, Growth</div>
-          </div>
-          <div class="metric">
-            <div class="label">Delivery</div>
-            <div class="value">Dashboards & Apps</div>
+        <div>
+          <h3 style="margin: 0 0 8px;">What I'm building</h3>
+          <div class="chips">
+            <span class="pill">Data pipelines</span>
+            <span class="pill">Nowcast dashboards</span>
+            <span class="pill">Portfolio experiments</span>
+            <span class="pill">Notes & docs</span>
           </div>
         </div>
-        <div class="grid-compact">
-          <div class="pill">Nowcasting</div>
-          <div class="pill">Factor tilts</div>
-          <div class="pill">Scenario stress</div>
-          <div class="pill">Cross-asset signals</div>
+        <div class="grid-two">
+          <div class="tile">
+            <div class="label">Current focus</div>
+            <div class="value">US + Canada macro plumbing</div>
+          </div>
+          <div class="tile">
+            <div class="label">Working principle</div>
+            <div class="value">Evidence over hype. Ship small.</div>
+          </div>
         </div>
       </div>
     </section>
 
     <section id="dashboards">
       <div class="section-header">
-        <h2>Macro Dashboards</h2>
-        <p>Country views that blend growth, inflation, policy, and market tone.</p>
+        <div>
+          <h2>Macro Dashboards</h2>
+          <p>Work in progress: personal dashboards for growth, inflation, liquidity, and policy signals. UI is being scaffolded while data pipelines firm up.</p>
+        </div>
+        <span class="status">Status: data plumbing nearly ready</span>
       </div>
+
       <div class="cards">
+        <article class="card">
+          <h3>United States</h3>
+          <p>Growth, inflation, policy stance, term structure, liquidity, and market tone. Built for quick regime reads.</p>
+          <span class="status">Status: data pipeline almost ready, UI under construction.</span>
+          <div class="tiles">
+            <div class="tile">
+              <div class="label">Growth Nowcast</div>
+              <div class="value">Last updated: coming soon</div>
+            </div>
+            <div class="tile">
+              <div class="label">Inflation Pulse</div>
+              <div class="value">Sticky CPI, PCE preview</div>
+            </div>
+            <div class="tile">
+              <div class="label">Curve & Term Premium</div>
+              <div class="value">Filling in estimates</div>
+            </div>
+            <div class="tile">
+              <div class="label">Risk Appetite</div>
+              <div class="value">Equity breadth + credit</div>
+            </div>
+          </div>
+        </article>
+
         <article class="card">
           <h3>Canada</h3>
-          <p>Housing, labor, and BoC path monitoring with regional spreads and breakevens.</p>
-          <span class="pill">Coming soon</span>
-        </article>
-        <article class="card">
-          <h3>USA</h3>
-          <p>Growth nowcast, liquidity pulse, term premium estimates, and sector rotation heatmaps.</p>
-          <span class="pill">Coming soon</span>
-        </article>
-        <article class="card">
-          <h3>China</h3>
-          <p>Credit impulse, export momentum, policy easing tracker, and commodity signal stack.</p>
-          <span class="pill">Coming soon</span>
+          <p>Housing, labor market, BoC path, regional spreads, and market breadth. Built to sense turning points early.</p>
+          <span class="status">Status: data pipeline almost ready, UI under construction.</span>
+          <div class="tiles">
+            <div class="tile">
+              <div class="label">Housing Pulse</div>
+              <div class="value">Inventory & affordability</div>
+            </div>
+            <div class="tile">
+              <div class="label">Labor Market</div>
+              <div class="value">Unemployment & wage trend</div>
+            </div>
+            <div class="tile">
+              <div class="label">BoC Path</div>
+              <div class="value">Market-implied cuts</div>
+            </div>
+            <div class="tile">
+              <div class="label">Spreads & Breakevens</div>
+              <div class="value">Coming soon</div>
+            </div>
+          </div>
         </article>
       </div>
+
+      <div class="note">These dashboards are personal research tools. They are not trading recommendations.</div>
     </section>
 
-    <section id="optimizer">
+    <section id="chatbot">
       <div class="section-header">
-        <h2>Portfolio Optimizer</h2>
-        <p>Allocate by factor exposure or asset class tilts with transparent constraints.</p>
-      </div>
-      <div class="panel">
-        <p>Model portfolios that flex between risk-on and risk-off regimes, guided by macro signals and your guardrails.</p>
-        <div class="grid-compact" style="margin-top: 14px;">
-          <div class="pill">Factor weights (value, growth, quality, carry)</div>
-          <div class="pill">Asset class and sub-asset tilts</div>
-          <div class="pill">Drawdown and vol limits</div>
-          <div class="pill">Scenario stress tests</div>
+        <div>
+          <h2>Portfolio Management Chatbot</h2>
+          <p>A personal experiment that discusses allocations, risk, and macro views. Front-end only—connects to a Python backend you host elsewhere. Not financial advice.</p>
         </div>
-        <div class="hero-cta" style="margin-top: 18px;">
-          <a class="btn btn-primary" href="mailto:hello@katalepsislab.com">Request access</a>
-          <a class="btn btn-ghost" href="#approach">See methodology</a>
-        </div>
+        <span class="status">Experiment</span>
       </div>
-    </section>
 
-    <section id="approach">
-      <div class="section-header">
-        <h2>How we work</h2>
-        <p>Transparent models, reproducible research, and fast iteration loops.</p>
-      </div>
-      <div class="cards">
-        <article class="card">
-          <h3>Signal design</h3>
-          <p>Blend macro data, market prices, and qualitative policy signals into clean, explainable scores.</p>
-          <span class="pill">Evidence over noise</span>
-        </article>
-        <article class="card">
-          <h3>Product-first</h3>
-          <p>We ship dashboards and apps, not PDFs. Everything is built to be touched, tested, and improved.</p>
-          <span class="pill">Interactive delivery</span>
-        </article>
-        <article class="card">
-          <h3>Partnered builds</h3>
-          <p>Co-develop with your team to reflect mandate, constraints, and governance out of the gate.</p>
-          <span class="pill">Co-create</span>
-        </article>
-      </div>
-    </section>
-
-    <section id="contact">
-      <div class="panel">
-        <div class="section-header">
-          <h2>Collaborate with Katalepsis Lab</h2>
-          <p>Let us build your macro dashboards and portfolio optimizer together.</p>
+      <div class="chat-grid">
+        <div class="panel chat-config">
+          <div>
+            <h3 style="margin: 0 0 6px;">Connection</h3>
+            <p class="help">Point this UI at your backend endpoint. Defaults to a placeholder.</p>
+          </div>
+          <div>
+            <label for="backendUrl">Backend URL</label>
+            <input type="text" id="backendUrl" name="backendUrl" aria-label="Backend URL" />
+            <p class="help">Change to your Python service endpoint (POST). <!-- Update this value to your real backend URL. --></p>
+          </div>
+          <div>
+            <label for="apiKey">OpenAI API key (optional)</label>
+            <input type="password" id="apiKey" name="apiKey" aria-label="OpenAI API key" autocomplete="off" />
+            <p class="help">Used only in your browser requests and not stored on a server from this site.</p>
+          </div>
+          <div class="note">Your key is kept in this browser only so requests can include it. Nothing is logged.</div>
         </div>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="mailto:hello@katalepsislab.com">Email the lab</a>
-          <a class="btn btn-ghost" href="https://github.com/katalepsis-lab" target="_blank" rel="noreferrer">GitHub</a>
+
+        <div class="chat-window">
+          <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
+          <div class="chat-input">
+            <form id="chatForm" style="display: contents;">
+              <textarea id="chatMessage" name="chatMessage" placeholder="Ask about allocations, risk, or a macro view..." aria-label="Message"></textarea>
+              <button type="submit" class="btn btn-primary" id="sendBtn">Send</button>
+            </form>
+          </div>
+          <div class="error" id="chatError" role="alert" aria-live="assertive"></div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="nav">
-      <span>Katalepsis Lab - macro research and decision tools</span>
-      <span><a href="mailto:hello@katalepsislab.com">hello@katalepsislab.com</a></span>
+  <footer>
+    <div class="nav" style="padding: 0; max-width: 1100px;">
+      <div>
+        <strong>Katalepsis Lab</strong>
+        <div class="help">All content is for research and educational purposes. Nothing here is investment advice.</div>
+      </div>
+      <div class="help">Built as a personal lab for macro dashboards & portfolio tools.</div>
     </div>
   </footer>
+
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+    navToggle?.addEventListener("click", () => {
+      siteNav.classList.toggle("open");
+    });
+
+    // Update this to point to your actual Python backend.
+    const DEFAULT_BACKEND_URL = "https://your-backend-url.example.com/api/chat";
+    const backendUrlInput = document.getElementById("backendUrl");
+    backendUrlInput.value = DEFAULT_BACKEND_URL;
+
+    const apiKeyInput = document.getElementById("apiKey");
+    const chatMessagesEl = document.getElementById("chatMessages");
+    const chatForm = document.getElementById("chatForm");
+    const chatMessageInput = document.getElementById("chatMessage");
+    const chatError = document.getElementById("chatError");
+    const sendBtn = document.getElementById("sendBtn");
+
+    const storedKey = window.localStorage.getItem("katalepsis-openai-key");
+    if (storedKey) apiKeyInput.value = storedKey;
+
+    const messages = [
+      {
+        role: "assistant",
+        text: "Hi—this is a portfolio management chatbot experiment. I can discuss allocations, risk budgets, and macro narratives. Not investment advice."
+      }
+    ];
+
+    function renderMessages() {
+      chatMessagesEl.innerHTML = messages.map((msg) => {
+        const side = msg.role === "user" ? "user" : "assistant";
+        return '<div class="message ' + side + '"><div class="bubble">' + escapeHtml(msg.text) + "</div></div>";
+      }).join("");
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe.replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[m]));
+    }
+
+    async function sendMessageToBackend(message, openaiKey, backendUrl) {
+      // Adjust field names here if your backend expects different keys.
+      const payload = {
+        message,
+        openai_api_key: openaiKey || undefined
+      };
+
+      const response = await fetch(backendUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Backend returned " + response.status);
+      }
+
+      const data = await response.json();
+      // Adjust the property used below if your backend returns a different shape.
+      return data.reply || data.message || "Response received (adjust parsing to match your backend).";
+    }
+
+    chatForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const text = chatMessageInput.value.trim();
+      if (!text) return;
+
+      chatError.textContent = "";
+      const backendUrl = backendUrlInput.value.trim() || DEFAULT_BACKEND_URL;
+      const openaiKey = apiKeyInput.value.trim();
+      if (openaiKey) {
+        window.localStorage.setItem("katalepsis-openai-key", openaiKey);
+      } else {
+        window.localStorage.removeItem("katalepsis-openai-key");
+      }
+
+      messages.push({ role: "user", text });
+      renderMessages();
+      chatMessageInput.value = "";
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Thinking…";
+
+      try {
+        const reply = await sendMessageToBackend(text, openaiKey, backendUrl);
+        messages.push({ role: "assistant", text: reply });
+      } catch (err) {
+        messages.push({ role: "assistant", text: "Could not reach the backend yet. Please verify the URL and try again." });
+        chatError.textContent = "Error: " + (err && err.message ? err.message : "Unable to reach backend");
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Send";
+        renderMessages();
+      }
+    });
+
+    renderMessages();
+  </script>
 </body>
 </html>
