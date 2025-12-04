@@ -367,25 +367,31 @@
       display: flex;
       flex-direction: column;
       box-shadow: var(--shadow);
+      padding: 12px;
     }
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
-      display: grid;
-      gap: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+      align-content: flex-start;
     }
 
-    .message { display: flex; }
+    .message { display: flex; align-items: flex-start; }
     .message.user { justify-content: flex-end; }
 
     .bubble {
       max-width: 90%;
-      padding: 10px 14px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
       border: 1px solid var(--edge);
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.02);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      line-height: 1.45;
     }
 
     .message.user .bubble {
@@ -396,14 +402,107 @@
 
     .message.assistant .bubble { color: var(--text); }
 
+    .bubble p { margin: 0 0 8px; }
+    .bubble p:last-child { margin-bottom: 0; }
+
+    .bubble strong { color: #f2f7ff; }
+    .bubble em { color: #d8e7ff; }
+
+    .bubble code.inline-code {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--edge);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-family: "SFMono-Regular", "Consolas", "Monaco", monospace;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .bubble pre.code-block {
+      background: #0b1625;
+      border: 1px solid var(--edge);
+      border-radius: 12px;
+      padding: 12px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", "Consolas", "Monaco", monospace;
+      font-size: 0.95rem;
+      color: var(--text);
+      margin: 8px 0 0;
+    }
+
+    .bubble pre.code-block code { white-space: pre; display: block; }
+
+    .bubble table.md-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      border: 1px solid var(--edge);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .bubble table.md-table th,
+    .bubble table.md-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--edge);
+      text-align: left;
+      font-size: 0.96rem;
+    }
+
+    .bubble table.md-table th {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .bubble table.md-table tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .bubble hr.md-hr {
+      border: none;
+      border-top: 1px solid var(--edge);
+      margin: 14px 0;
+    }
+
+    .bubble h1,
+    .bubble h2,
+    .bubble h3,
+    .bubble h4,
+    .bubble h5,
+    .bubble h6 {
+      margin: 0 0 10px;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .bubble h1 { font-size: 1.4rem; }
+    .bubble h2 { font-size: 1.25rem; }
+    .bubble h3 { font-size: 1.15rem; }
+    .bubble h4 { font-size: 1.08rem; }
+    .bubble h5,
+    .bubble h6 { font-size: 1rem; }
+
+    .md-list {
+      margin: 6px 0 10px 18px;
+      padding: 0 0 0 12px;
+      color: var(--text);
+    }
+
+    .md-list li { margin: 6px 0; }
+
     .chat-input {
       border-top: 1px solid var(--edge);
       padding: 10px;
       display: flex;
       gap: 8px;
-      background: rgba(0, 0, 0, 0.12);
+      background: rgba(5, 8, 14, 0.65);
+      backdrop-filter: blur(6px);
       position: sticky;
       bottom: 0;
+      margin: 0 4px 4px;
+      border-radius: var(--radius);
     }
 
     .chat-input textarea {
@@ -675,14 +774,14 @@
     const messages = [
       {
         role: "assistant",
-        text: "Hi—this is a portfolio management chatbot experiment. I can discuss allocations, risk budgets, and macro narratives. Not investment advice."
+        text: "Hi - this is a portfolio management chatbot experiment. I can discuss allocations, risk budgets, and macro narratives. Not investment advice."
       }
     ];
 
     function renderMessages() {
       chatMessagesEl.innerHTML = messages.map((msg) => {
         const side = msg.role === "user" ? "user" : "assistant";
-        return '<div class="message ' + side + '"><div class="bubble">' + escapeHtml(msg.text) + "</div></div>";
+        return '<div class="message ' + side + '"><div class="bubble">' + renderMarkdownSafe(msg.text) + "</div></div>";
       }).join("");
       chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
     }
@@ -695,6 +794,101 @@
         '"': "&quot;",
         "'": "&#039;"
       }[m]));
+    }
+
+    function renderMarkdownSafe(raw) {
+      const codeBlocks = [];
+      let text = (raw || "").replace(/\r\n?/g, "\n");
+
+      text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (_, lang, code) => {
+        const language = lang ? lang.trim() : "";
+        const escapedCode = escapeHtml(code.trim());
+        const placeholder = "@@CODEBLOCK" + codeBlocks.length + "@@";
+        const langAttr = language ? ' data-lang="' + escapeHtml(language) + '"' : "";
+        const classAttr = language ? ' class="language-' + escapeHtml(language) + '"' : "";
+        codeBlocks.push('<pre class="code-block"' + langAttr + '><code' + classAttr + ">" + escapedCode + "</code></pre>");
+        return placeholder;
+      });
+
+      text = escapeHtml(text);
+      text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+      text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+      const lines = text.split("\n");
+      const htmlParts = [];
+      let inList = false;
+      const flushList = () => {
+        if (inList) {
+          htmlParts.push("</ul>");
+          inList = false;
+        }
+      };
+
+      const parseCells = (row) => row.split("|").map((c) => c.trim()).filter((c, i, arr) => !(i === 0 && c === "") && !(i === arr.length - 1 && c === ""));
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        const headingMatch = line.match(/^\s*(#{1,6})\s+(.*)/);
+        if (headingMatch) {
+          flushList();
+          const level = Math.min(headingMatch[1].length, 6);
+          htmlParts.push("<h" + level + ">" + headingMatch[2].trim() + "</h" + level + ">");
+          continue;
+        }
+
+        if (/^\s*[-*_]{3,}\s*$/.test(line)) {
+          flushList();
+          htmlParts.push('<hr class="md-hr">');
+          continue;
+        }
+
+        const nextLine = lines[i + 1];
+        if (nextLine && /\|/.test(line) && /^\s*\|?\s*:?-{3,}/.test(nextLine)) {
+          flushList();
+          const headerCells = parseCells(line);
+          const bodyRows = [];
+          i += 2;
+          while (i < lines.length && /\|/.test(lines[i]) && !/^\s*$/.test(lines[i])) {
+            bodyRows.push(parseCells(lines[i]));
+            i++;
+          }
+          i -= 1;
+
+          htmlParts.push('<table class="md-table"><thead><tr>' + headerCells.map((cell) => "<th>" + cell + "</th>").join("") + "</tr></thead>");
+          htmlParts.push("<tbody>");
+          bodyRows.forEach((row) => {
+            htmlParts.push("<tr>" + row.map((cell) => "<td>" + cell + "</td>").join("") + "</tr>");
+          });
+          htmlParts.push("</tbody></table>");
+          continue;
+        }
+
+        const listMatch = line.match(/^\s*[-*]\s+(.*)/);
+        if (listMatch) {
+          if (!inList) {
+            htmlParts.push('<ul class="md-list">');
+            inList = true;
+          }
+          htmlParts.push("<li>" + listMatch[1] + "</li>");
+        } else if (line.trim() === "") {
+          flushList();
+          if (i !== lines.length - 1) htmlParts.push("<br>");
+        } else {
+          flushList();
+          htmlParts.push("<p>" + line + "</p>");
+        }
+      }
+
+      flushList();
+
+      let html = htmlParts.join("");
+      codeBlocks.forEach((block, idx) => {
+        html = html.replace("@@CODEBLOCK" + idx + "@@", block);
+      });
+
+      return html;
     }
 
     async function sendMessageToBackend(message, openaiKey, backendUrl) {
@@ -737,6 +931,16 @@
       // Adjust the property used below if your backend returns a different shape.
       return data.reply || data.message || "Response received (adjust parsing to match your backend).";
     }
+
+    chatMessageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        if (!sendBtn.disabled) {
+          // Use form submission so the existing handler runs.
+          chatForm.requestSubmit();
+        }
+      }
+    });
 
     chatForm.addEventListener("submit", async (event) => {
       event.preventDefault();
