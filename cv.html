@@ -58,6 +58,8 @@
       gap: 12px;
       font-weight: 700;
       letter-spacing: 0.6px;
+      color: var(--text);
+      text-decoration: none;
     }
 
     .logo-mark {
@@ -151,6 +153,15 @@
       box-shadow: 0 12px 30px rgba(66, 196, 152, 0.35);
     }
 
+    .btn-primary:hover,
+    .btn-primary:focus-visible,
+    .btn-primary:active {
+      background: linear-gradient(120deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #ffffff;
+      border-color: var(--edge);
+      box-shadow: 0 12px 30px rgba(66, 196, 152, 0.42);
+    }
+
     section { margin-bottom: 40px; }
 
     .section-header {
@@ -206,13 +217,13 @@
 <body>
   <header>
     <div class="nav" id="siteNav">
-      <div class="logo">
+      <a class="logo" href="index.html#home">
         <div class="logo-mark" aria-hidden="true"></div>
         <div>
           <span class="brand">Katalepsis Lab</span>
           <span class="tagline">Macro research sandbox</span>
         </div>
-      </div>
+      </a>
       <button class="nav-toggle" aria-label="Toggle navigation" id="navToggle">Menu</button>
       <nav class="nav-links" aria-label="Primary">
         <a href="index.html#home">Home</a>
