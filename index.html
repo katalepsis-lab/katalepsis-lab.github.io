@@ -631,7 +631,7 @@
     });
 
     // Update this to point to your actual Python backend.
-    const DEFAULT_BACKEND_URL = "https://your-backend-url.example.com/api/chat";
+    const DEFAULT_BACKEND_URL = "https://katalepsis-lab.app.n8n.cloud/webhook-test/chat"; // This is the testing webhook, change for prod.
     const backendUrlInput = document.getElementById("backendUrl");
     backendUrlInput.value = DEFAULT_BACKEND_URL;
 
@@ -644,6 +644,33 @@
 
     const storedKey = window.localStorage.getItem("katalepsis-openai-key");
     if (storedKey) apiKeyInput.value = storedKey;
+
+    const RATE_LIMIT_COUNT = 25;
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+    const RATE_LIMIT_STORAGE_KEY = "katalepsis-rate-limit";
+
+    function loadRateLimit() {
+      try {
+        const raw = window.localStorage.getItem(RATE_LIMIT_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveRateLimit(stamps) {
+      try {
+        window.localStorage.setItem(RATE_LIMIT_STORAGE_KEY, JSON.stringify(stamps));
+      } catch (_) {
+        // ignore storage errors
+      }
+    }
+
+    function pruneRateLimit(stamps) {
+      const now = Date.now();
+      return stamps.filter((ts) => now - ts < RATE_LIMIT_WINDOW_MS);
+    }
 
     const messages = [
       {
@@ -686,7 +713,24 @@
       });
 
       if (!response.ok) {
-        throw new Error("Backend returned " + response.status);
+        let detail = "";
+        try {
+          const errData = await response.json();
+          detail = errData?.detail || errData?.message || "";
+        } catch (_) {
+          try {
+            detail = await response.text();
+          } catch (_) {
+            detail = "";
+          }
+        }
+        const baseMsg = detail || "Backend returned " + response.status;
+        if (response.status === 429) {
+          throw new Error(
+            detail || "Rate limit reached: 25 messages per hour without your own API key. Please add your key or come back later."
+          );
+        }
+        throw new Error(baseMsg);
       }
 
       const data = await response.json();
@@ -708,6 +752,19 @@
         window.localStorage.removeItem("katalepsis-openai-key");
       }
 
+      if (!openaiKey) {
+        let stamps = pruneRateLimit(loadRateLimit());
+        if (stamps.length >= RATE_LIMIT_COUNT) {
+          const limitMsg = "Rate limit reached: 25 messages per hour without your own API key. Please add your key or try again later.";
+          messages.push({ role: "assistant", text: limitMsg });
+          chatError.textContent = "Error: " + limitMsg;
+          renderMessages();
+          return;
+        }
+        stamps.push(Date.now());
+        saveRateLimit(stamps);
+      }
+
       messages.push({ role: "user", text });
       renderMessages();
       chatMessageInput.value = "";
@@ -718,8 +775,9 @@
         const reply = await sendMessageToBackend(text, openaiKey, backendUrl);
         messages.push({ role: "assistant", text: reply });
       } catch (err) {
-        messages.push({ role: "assistant", text: "Could not reach the backend yet. Please verify the URL and try again." });
-        chatError.textContent = "Error: " + (err && err.message ? err.message : "Unable to reach backend");
+        const friendly = err && err.message ? err.message : "Unable to reach backend";
+        messages.push({ role: "assistant", text: friendly });
+        chatError.textContent = "Error: " + friendly;
       } finally {
         sendBtn.disabled = false;
         sendBtn.textContent = "Send";
