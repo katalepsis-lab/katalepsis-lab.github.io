@@ -576,6 +576,16 @@ footer {
   width: fit-content;
 }
 
+/* Match optimizer chat bubbles to main chatbot styling */
+.chat-entry.user .bubble {
+  background: rgba(110, 231, 183, 0.12);
+  border-color: rgba(110, 231, 183, 0.35);
+  color: var(--text);
+}
+.chat-entry.assistant .bubble {
+  color: var(--text);
+}
+
 .chat-input-bar {
   display: flex;
   gap: 8px;
