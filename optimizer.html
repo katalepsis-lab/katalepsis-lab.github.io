@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Katalepsis Lab | Optimizer MVP</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="optimizer">
+  <header>
+    <div class="nav" id="siteNav">
+      <a class="logo" href="index.html#home">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div>
+          <span class="brand">Katalepsis Lab</span>
+          <span class="tagline">Macro research sandbox</span>
+        </div>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" id="navToggle">Menu</button>
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link" data-page="home" href="index.html#home">Home</a>
+        <a class="nav-link" data-page="dashboards" href="index.html#dashboards">Dashboards</a>
+        <a class="nav-link" data-page="chatbot" href="index.html#chatbot">Chatbot</a>
+        <a class="nav-link" data-page="optimizer" href="optimizer.html">Optimizer</a>
+        <a class="nav-link" data-page="cv" href="cv.html">CV</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-header" style="margin-bottom: 26px;">
+      <div>
+        <h1 style="margin: 0;">Portfolio Optimizer MVP</h1>
+        <p class="lede">Feed a macro view, get suggested asset-class bands, then run a mock optimization. All front-end only for now.</p>
+      </div>
+      <span class="status">MVP</span>
+    </section>
+
+    <div class="optimizer-layout">
+      <div class="optimizer-column">
+        <div class="panel chat-panel">
+          <div>
+            <h3 style="margin: 0 0 6px;">Macro view chat</h3>
+            <p class="help" style="margin: 0;">Explain the macro backdrop. The assistant responds with suggested asset-class bands.</p>
+          </div>
+          <div class="chat-history" id="optimizerChatHistory" aria-live="polite"></div>
+          <div class="chat-input-bar">
+            <textarea id="macroInput" name="macroInput" placeholder="Type your macro view and constraints..." aria-label="Macro view input"></textarea>
+            <button class="btn btn-primary" id="optimizerSend" type="button">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="optimizer-column">
+        <div class="panel allocation-panel">
+          <h3>Asset-class allocation (bands)</h3>
+          <p class="help">AI suggestions land here. You can adjust manually before confirming.</p>
+          <form class="allocation-form" id="allocationForm">
+            <div class="allocation-row">
+              <label for="alloc-equities">Equities</label>
+              <select id="alloc-equities" name="equities">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="allocation-row">
+              <label for="alloc-fixed-income">Fixed Income</label>
+              <select id="alloc-fixed-income" name="fixed_income">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="allocation-row">
+              <label for="alloc-commodities">Commodities</label>
+              <select id="alloc-commodities" name="commodities">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="allocation-row">
+              <label for="alloc-alternatives">Alternatives</label>
+              <select id="alloc-alternatives" name="alternatives">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="allocation-row">
+              <label for="alloc-cash">Cash</label>
+              <select id="alloc-cash" name="cash">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </form>
+          <div class="control-buttons">
+            <button class="btn btn-primary" type="button" id="confirmBandsBtn">Confirm allocation bands</button>
+          </div>
+          <p class="help" style="margin: 4px 0 0;">After confirming, choose whether to refresh data before running the optimization.</p>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin: 0 0 8px;">Optimization snapshot</h3>
+          <p class="help" style="margin: 0 0 10px;">Mock weights update after each run.</p>
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Weight (%)</th>
+              </tr>
+            </thead>
+            <tbody id="weightsTableBody">
+              <tr><td colspan="2" class="help">No optimization run yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const siteNav = document.getElementById("siteNav");
+    navToggle?.addEventListener("click", () => {
+      siteNav.classList.toggle("open");
+    });
+
+    const activePage = document.body?.dataset?.page;
+    document.querySelectorAll(".nav-link").forEach((link) => {
+      if (link.dataset.page === activePage) {
+        link.classList.add("active");
+      }
+      link.addEventListener("click", () => siteNav.classList.remove("open"));
+    });
+
+    // Optimizer-specific UI wiring stays isolated to this page.
+    if (document.body?.dataset?.page === "optimizer") {
+      const chatHistory = document.getElementById("optimizerChatHistory");
+      const macroInput = document.getElementById("macroInput");
+      const sendBtn = document.getElementById("optimizerSend");
+      const confirmBandsBtn = document.getElementById("confirmBandsBtn");
+      const weightsTableBody = document.getElementById("weightsTableBody");
+
+      const allocationSelects = {
+        equities: document.getElementById("alloc-equities"),
+        fixed_income: document.getElementById("alloc-fixed-income"),
+        commodities: document.getElementById("alloc-commodities"),
+        alternatives: document.getElementById("alloc-alternatives"),
+        cash: document.getElementById("alloc-cash")
+      };
+
+      let confirmedBands = {
+        equities: "medium",
+        fixed_income: "medium",
+        commodities: "medium",
+        alternatives: "medium",
+        cash: "medium"
+      };
+
+      function appendMessage(role, text, options = {}) {
+        const entry = document.createElement("div");
+        entry.className = "chat-entry " + (role === "user" ? "user" : "assistant");
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        if (options.asHtml) {
+          bubble.innerHTML = text;
+        } else {
+          bubble.textContent = text;
+        }
+        entry.appendChild(bubble);
+        chatHistory.appendChild(entry);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        return { entry, bubble };
+      }
+
+      function applyAllocationSuggestion(allocations) {
+        Object.entries(allocations || {}).forEach(([key, value]) => {
+          if (allocationSelects[key]) {
+            allocationSelects[key].value = value;
+          }
+        });
+      }
+
+      function readBandsFromForm() {
+        return {
+          equities: allocationSelects.equities.value,
+          fixed_income: allocationSelects.fixed_income.value,
+          commodities: allocationSelects.commodities.value,
+          alternatives: allocationSelects.alternatives.value,
+          cash: allocationSelects.cash.value
+        };
+      }
+
+      function setWeightsTable(weights) {
+        if (!weightsTableBody) return;
+        weightsTableBody.innerHTML = "";
+        if (!weights || weights.length === 0) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 2;
+          cell.className = "help";
+          cell.textContent = "No weights above 1% returned.";
+          row.appendChild(cell);
+          weightsTableBody.appendChild(row);
+          return;
+        }
+        weights.forEach((rowItem) => {
+          const row = document.createElement("tr");
+          const tickerCell = document.createElement("td");
+          tickerCell.textContent = rowItem.ticker;
+          const weightCell = document.createElement("td");
+          weightCell.textContent = (rowItem.weight * 100).toFixed(0) + "%";
+          row.appendChild(tickerCell);
+          row.appendChild(weightCell);
+          weightsTableBody.appendChild(row);
+        });
+      }
+
+      function handleMacroViewSubmit(message, thinkingHandle) {
+        // BACKEND INTEGRATION: replace this mock response with a real fetch(...)
+        // Call your backend endpoint here, sending the user macro view.
+        // The backend should return a JSON in the same format as mockAllocationResponse.
+        const mockAllocationResponse = {
+          allocations: {
+            equities: "medium",
+            fixed_income: "high",
+            commodities: "low",
+            alternatives: "medium",
+            cash: "low"
+          },
+          justification: "Example justification text explaining the suggested asset-class tilts."
+        };
+
+        setTimeout(() => {
+          thinkingHandle?.entry?.remove();
+          const summary = "<strong>Proposed bands</strong>: equities " + mockAllocationResponse.allocations.equities +
+            ", fixed income " + mockAllocationResponse.allocations.fixed_income +
+            ", commodities " + mockAllocationResponse.allocations.commodities +
+            ", alternatives " + mockAllocationResponse.allocations.alternatives +
+            ", cash " + mockAllocationResponse.allocations.cash +
+            ".<br><br>" + mockAllocationResponse.justification;
+          appendMessage("assistant", summary, { asHtml: true });
+          applyAllocationSuggestion(mockAllocationResponse.allocations);
+          sendBtn.disabled = false;
+          sendBtn.textContent = "Send";
+        }, 600);
+      }
+
+      function handleAllocationConfirm(finalBands) {
+        // BACKEND INTEGRATION: the confirmed bands will eventually be sent to the backend
+        // together with the macro view and any other context you need.
+        confirmedBands = finalBands;
+        appendMessage("assistant", "User confirmed allocation bands.");
+
+        const choiceContainer = document.createElement("div");
+        choiceContainer.className = "choice-buttons";
+
+        const yesBtn = document.createElement("button");
+        yesBtn.type = "button";
+        yesBtn.className = "btn btn-primary";
+        yesBtn.textContent = "Yes, update data";
+        yesBtn.addEventListener("click", () => handleDataRefreshChoice("y"));
+
+        const noBtn = document.createElement("button");
+        noBtn.type = "button";
+        noBtn.className = "btn";
+        noBtn.textContent = "No, use cached data";
+        noBtn.addEventListener("click", () => handleDataRefreshChoice("n"));
+
+        choiceContainer.appendChild(yesBtn);
+        choiceContainer.appendChild(noBtn);
+
+        const prompt = appendMessage(
+          "assistant",
+          "Latest data cached is from 2024-01-01. Do you want to update it? (y/n)"
+        );
+        prompt.bubble.appendChild(choiceContainer);
+      }
+
+      function handleDataRefreshChoice(choice) {
+        const text = choice === "y"
+          ? "Updating data and initializing optimization..."
+          : "Using cached data. Initializing optimization...";
+        appendMessage("assistant", text);
+        runOptimization(choice, confirmedBands);
+      }
+
+      function runOptimization(choice, bands) {
+        // BACKEND INTEGRATION: replace mockOptimizationResult with a real fetch(...)
+        // Here you will call your optimizer backend (e.g. app.py / optimizer_engine.py)
+        // passing the confirmed bands and data refresh choice, then render the real result.
+        const mockOptimizationResult = {
+          weights: [
+            { ticker: "ZAG.TO", weight: 0.25 },
+            { ticker: "ZSP.TO", weight: 0.3 },
+            { ticker: "XEF.TO", weight: 0.2 },
+            { ticker: "XEC.TO", weight: 0.1 },
+            { ticker: "GLD", weight: 0.15 }
+          ],
+          metrics: {
+            sharpe_ratio: 1.15,
+            std: 0.12,
+            expected_return: 0.08
+          }
+        };
+
+        const filtered = mockOptimizationResult.weights.filter((item) => item.weight > 0.01);
+        setWeightsTable(filtered);
+
+        const weightLines = filtered.map((item) => item.ticker + ": " + (item.weight * 100).toFixed(0) + "%");
+        const metrics = mockOptimizationResult.metrics;
+        const metricsList = [
+          "Sharpe ratio (3-year lookback): " + metrics.sharpe_ratio.toFixed(2),
+          "Standard deviation: " + (metrics.std * 100).toFixed(1) + "%",
+          "Expected return: " + (metrics.expected_return * 100).toFixed(1) + "%"
+        ];
+
+        appendMessage(
+          "assistant",
+          "<strong>Optimization complete</strong><br>" +
+          weightLines.join("<br>") +
+          "<br><br><ul class=\"md-list\">" +
+          metricsList.map((m) => "<li>" + m + "</li>").join("") +
+          "</ul>",
+          { asHtml: true }
+        );
+      }
+
+      function handleSend() {
+        const message = macroInput.value.trim();
+        if (!message) return;
+        appendMessage("user", message);
+        macroInput.value = "";
+        sendBtn.disabled = true;
+        sendBtn.textContent = "Thinking...";
+        const thinking = appendMessage("assistant", "Thinking...");
+        handleMacroViewSubmit(message, thinking);
+      }
+
+      sendBtn?.addEventListener("click", handleSend);
+      macroInput?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+          event.preventDefault();
+          handleSend();
+        }
+      });
+
+      confirmBandsBtn?.addEventListener("click", () => {
+        const bands = readBandsFromForm();
+        handleAllocationConfirm(bands);
+      });
+
+      // Seed the chat with a friendly system message.
+      appendMessage(
+        "assistant",
+        "Tell me your macro view (growth, inflation, liquidity, policy) and any constraints. I'll propose asset-class bands."
+      );
+    }
+  </script>
+</body>
+</html>
