@@ -566,6 +566,8 @@ footer {
   border: 1px solid var(--edge);
   background: var(--card);
   box-shadow: var(--shadow);
+  scrollbar-width: thin;
+  scrollbar-color: var(--edge) #0b1322;
 }
 
 .chat-entry { display: flex; margin-bottom: 10px; }
@@ -584,6 +586,25 @@ footer {
 }
 .chat-entry.assistant .bubble {
   color: var(--text);
+}
+
+/* Dark scrollbars for optimizer chat */
+.chat-history::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chat-history::-webkit-scrollbar-track {
+  background: #0b1322;
+  border-radius: 10px;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+  background: var(--edge);
+  border-radius: 10px;
+}
+
+.chat-history::-webkit-scrollbar-thumb:hover {
+  background: rgba(110, 231, 183, 0.35);
 }
 
 .chat-input-bar {
