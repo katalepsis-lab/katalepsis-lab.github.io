@@ -31,7 +31,7 @@
     <section class="section-header" style="margin-bottom: 26px;">
       <div>
         <h1 style="margin: 0;">Portfolio Optimizer MVP</h1>
-        <p class="lede">Feed a macro view, get suggested asset-class bands, then run a mock optimization. All front-end only for now.</p>
+        <p class="lede">Feed a macro regime, get suggested asset-class bands, then run an optimization against the hosted backend.</p>
       </div>
       <span class="status">MVP</span>
     </section>
@@ -45,22 +45,22 @@
           </div>
           <div style="margin-top: 10px;">
             <label for="optimizerBackendUrl">Backend URL</label>
-            <input type="text" id="optimizerBackendUrl" name="optimizerBackendUrl" aria-label="Optimizer backend URL" placeholder="https://your-backend.example.com/optimizer" />
+            <input type="text" id="optimizerBackendUrl" name="optimizerBackendUrl" aria-label="Optimizer backend URL" placeholder="https://optimizer-e4vz.onrender.com" />
           </div>
           <div style="margin-top: 10px;">
-            <label for="optimizerApiKey">OpenAI API key (optional)</label>
-            <textarea id="optimizerApiKey" name="optimizerApiKey" aria-label="OpenAI API key" rows="2" placeholder="Paste your sk- key. It will be sent with this session's requests and not stored."></textarea>
+            <label for="optimizerApiKey">OpenAI API key</label>
+            <textarea id="optimizerApiKey" name="optimizerApiKey" aria-label="OpenAI API key" rows="2" placeholder="Paste your sk- key. It is sent only with each request and never stored."></textarea>
           </div>
         </div>
 
         <div class="panel chat-panel">
           <div>
             <h3 style="margin: 0 0 6px;">Macro view chat</h3>
-            <p class="help" style="margin: 0;">Explain the macro backdrop. The assistant responds with suggested asset-class bands.</p>
+            <p class="help" style="margin: 0;">Enter a macro regime (e.g. soft landing, stagflation, deflation shock). The backend returns suggested asset-class bands.</p>
           </div>
           <div class="chat-history" id="optimizerChatHistory" aria-live="polite"></div>
           <div class="chat-input-bar">
-            <textarea id="macroInput" name="macroInput" placeholder="Type your macro view and constraints..." aria-label="Macro view input"></textarea>
+            <textarea id="macroInput" name="macroInput" placeholder="Type a macro regime (and any constraints)..." aria-label="Macro view input"></textarea>
             <button class="btn btn-primary" id="optimizerSend" type="button">Send</button>
           </div>
         </div>
@@ -179,6 +179,7 @@
         alternatives: "medium",
         cash: "medium"
       };
+      let currentProposalId = null;
 
       function appendMessage(role, text, options = {}) {
         const entry = document.createElement("div");
@@ -194,6 +195,33 @@
         chatHistory.appendChild(entry);
         chatHistory.scrollTop = chatHistory.scrollHeight;
         return { entry, bubble };
+      }
+
+      function getApiBaseUrl() {
+        const raw = backendUrlInput?.value?.trim() || DEFAULT_OPTIMIZER_BACKEND_URL;
+        return raw.replace(/\/+$/, "");
+      }
+
+      async function readErrorDetail(response) {
+        try {
+          const errData = await response.json();
+          return errData?.detail || errData?.message || JSON.stringify(errData);
+        } catch (_) {
+          return "";
+        }
+      }
+
+      async function postJson(url, body) {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body ?? {})
+        });
+        if (!response.ok) {
+          const detail = await readErrorDetail(response);
+          throw new Error(detail || "Backend returned " + response.status);
+        }
+        return response.json();
       }
 
       function applyAllocationSuggestion(allocations) {
@@ -240,35 +268,22 @@
       }
 
       async function handleMacroViewSubmit(message, thinkingHandle) {
-        const backendUrl = backendUrlInput?.value?.trim() || DEFAULT_OPTIMIZER_BACKEND_URL;
+        const apiBase = getApiBaseUrl();
         const openaiKey = apiKeyInput?.value?.trim();
-        const payload = {
-          message,
-          confirmed_bands: readBandsFromForm(),
-          openai_api_key: openaiKey || undefined
-        };
+        if (!openaiKey) {
+          thinkingHandle?.entry?.remove();
+          appendMessage("assistant", "Add your OpenAI API key, then try again.");
+          return;
+        }
 
         try {
-          const response = await fetch(backendUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+          const data = await postJson(apiBase + "/proposal", {
+            api_key: openaiKey,
+            macro_regime: message
           });
-
-          if (!response.ok) {
-            let detail = "";
-            try {
-              const errData = await response.json();
-              detail = errData?.detail || errData?.message || "";
-            } catch (_) {
-              detail = "";
-            }
-            throw new Error(detail || "Backend returned " + response.status);
-          }
-
-          const data = await response.json();
-          const allocations = data.allocations || data.bands || {};
-          const justification = data.justification || data.message || "Response received (adjust parsing to match your backend).";
+          const allocations = data?.qualitative_allocations || {};
+          const justification = data?.justification || "Proposal received.";
+          currentProposalId = data?.proposal_id || currentProposalId;
 
           thinkingHandle?.entry?.remove();
 
@@ -288,9 +303,8 @@
       }
 
       function handleAllocationConfirm(finalBands) {
-        // BACKEND INTEGRATION: the confirmed bands will eventually be sent to the backend
-        // together with the macro view and any other context you need.
         confirmedBands = finalBands;
+        currentProposalId = currentProposalId || (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()));
         appendMessage("assistant", "User confirmed allocation bands.");
 
         const choiceContainer = document.createElement("div");
@@ -313,7 +327,7 @@
 
         const prompt = appendMessage(
           "assistant",
-          "Latest data cached is from 2024-01-01. Do you want to update it? (y/n)"
+          "Refresh market data before optimizing? (y/n)"
         );
         prompt.bubble.appendChild(choiceContainer);
       }
@@ -326,45 +340,61 @@
         runOptimization(choice, confirmedBands);
       }
 
-      function runOptimization(choice, bands) {
-        // BACKEND INTEGRATION: replace mockOptimizationResult with a real fetch(...)
-        // Here you will call your optimizer backend (e.g. app.py / optimizer_engine.py)
-        // passing the confirmed bands and data refresh choice, then render the real result.
-        const mockOptimizationResult = {
-          weights: [
-            { ticker: "ZAG.TO", weight: 0.25 },
-            { ticker: "ZSP.TO", weight: 0.3 },
-            { ticker: "XEF.TO", weight: 0.2 },
-            { ticker: "XEC.TO", weight: 0.1 },
-            { ticker: "GLD", weight: 0.15 }
-          ],
-          metrics: {
-            sharpe_ratio: 1.15,
-            std: 0.12,
-            expected_return: 0.08
+      function normalizeWeights(optimizeResponse) {
+        const weights = optimizeResponse?.weights ?? optimizeResponse?.asset_weights ?? optimizeResponse?.portfolio_weights;
+        if (Array.isArray(weights)) return weights;
+        if (weights && typeof weights === "object") {
+          return Object.entries(weights).map(([ticker, weight]) => ({ ticker, weight }));
+        }
+        return [];
+      }
+
+      async function runOptimization(choice, bands) {
+        const apiBase = getApiBaseUrl();
+        const thinking = appendMessage("assistant", "Running optimizer...");
+        try {
+          if (choice === "y") {
+            const refreshResponse = await fetch(apiBase + "/refresh_data", { method: "POST" });
+            if (!refreshResponse.ok) {
+              const detail = await readErrorDetail(refreshResponse);
+              throw new Error(detail || "refresh_data failed (" + refreshResponse.status + ")");
+            }
+            const refreshData = await refreshResponse.json();
+            appendMessage(
+              "assistant",
+              "Data refreshed: " + (refreshData?.rows ?? "?") + " rows, " + (refreshData?.tickers ?? "?") + " tickers."
+            );
           }
-        };
 
-        const filtered = mockOptimizationResult.weights.filter((item) => item.weight > 0.01);
-        setWeightsTable(filtered);
+          const optimizeResult = await postJson(apiBase + "/optimize", {
+            proposal_id: currentProposalId,
+            qualitative_allocations: bands
+          });
 
-        const weightLines = filtered.map((item) => item.ticker + ": " + (item.weight * 100).toFixed(0) + "%");
-        const metrics = mockOptimizationResult.metrics;
-        const metricsList = [
-          "Sharpe ratio (3-year lookback): " + metrics.sharpe_ratio.toFixed(2),
-          "Standard deviation: " + (metrics.std * 100).toFixed(1) + "%",
-          "Expected return: " + (metrics.expected_return * 100).toFixed(1) + "%"
-        ];
+          const normalized = normalizeWeights(optimizeResult).filter((item) => Number(item.weight) > 0.01);
+          setWeightsTable(normalized);
 
-        appendMessage(
-          "assistant",
-          "<strong>Optimization complete</strong><br>" +
-          weightLines.join("<br>") +
-          "<br><br><ul class=\"md-list\">" +
-          metricsList.map((m) => "<li>" + m + "</li>").join("") +
-          "</ul>",
-          { asHtml: true }
-        );
+          const weightLines = normalized.map((item) => item.ticker + ": " + (Number(item.weight) * 100).toFixed(0) + "%");
+          const metrics = optimizeResult?.metrics;
+          const metricsList = metrics && typeof metrics === "object"
+            ? Object.entries(metrics).map(([k, v]) => k + ": " + (typeof v === "number" ? v.toFixed(4) : String(v)))
+            : [];
+
+          thinking?.entry?.remove();
+          appendMessage(
+            "assistant",
+            "<strong>Optimization complete</strong><br>" +
+            (weightLines.length ? weightLines.join("<br>") : "No weights returned.") +
+            (metricsList.length
+              ? "<br><br><ul class=\"md-list\">" + metricsList.map((m) => "<li>" + m + "</li>").join("") + "</ul>"
+              : ""),
+            { asHtml: true }
+          );
+        } catch (err) {
+          thinking?.entry?.remove();
+          const friendly = err && err.message ? err.message : "Unable to run optimization.";
+          appendMessage("assistant", "Optimization error: " + friendly);
+        }
       }
 
       async function handleSend() {
@@ -399,7 +429,7 @@
       // Seed the chat with a friendly system message.
       appendMessage(
         "assistant",
-        "Tell me your macro view (growth, inflation, liquidity, policy) and any constraints. I'll propose asset-class bands."
+        "Enter a macro regime and any constraints. I'll propose asset-class allocation bands, then we can optimize."
       );
     }
   </script>
